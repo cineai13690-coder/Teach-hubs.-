@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI BOT – Flashcards</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* ==========================================
+       TeachHub Color Theme Variables
+       ========================================== */
+    :root {
+      --color-deep-purple: #0f0028;
+      --color-dark-accent: #2d0063;
+      --color-primary-glow: #8b5cf6;
+      --color-secondary-glow: #a78bfa;
+      --color-text-light: #e0e7ff;
+      --color-text-muted: #b4bfd9;
+    }
+
+    /* ==========================================
+       Global Layout
+       ========================================== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--color-deep-purple);
+      background-image: radial-gradient(
+        at top left,
+        rgba(45, 0, 99, 0.4) 0%,
+        rgba(15, 0, 40, 0.8) 70%,
+        var(--color-deep-purple) 100%
+      );
+      color: var(--color-text-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .app-layout {
+      display: flex;
+      width: 90%;
+      min-height: 90vh;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--color-dark-accent);
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.3),
+                  inset 0 0 30px rgba(45, 0, 99, 0.6);
+    }
+
+    /* ==========================================
+       Sidebar
+       ========================================== */
+    .sidebar {
+      width: 250px;
+      background: rgba(15, 0, 40, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 0;
+      gap: 40px;
+      box-shadow: 3px 0 15px rgba(0,0,0,0.4);
+    }
+    .logo { font-size:28px; font-weight:900; color:var(--color-secondary-glow); text-shadow:0 0 10px var(--color-primary-glow);}
+    .menu { display:flex; flex-direction:column; gap:20px; }
+    .menu button {
+      width:180px; padding:12px; border:none; border-radius:10px;
+      background: rgba(139,92,246,0.15); color:var(--color-text-light);
+      font-size:16px; cursor:pointer; font-weight:600;
+      transition: all 0.3s ease; box-shadow:0 0 10px rgba(139,92,246,0.2);
+    }
+    .menu button:hover {
+      background: var(--color-primary-glow); color:var(--color-deep-purple);
+      transform: translateY(-2px); box-shadow:0 0 20px var(--color-secondary-glow);
+    }
+
+    /* ==========================================
+       Main Section
+       ========================================== */
+    .main {
+      flex:1; display:flex; justify-content:center; align-items:center;
+      background: radial-gradient(circle at center, rgba(45,0,99,0.5), rgba(15,0,40,0.8));
+      position: relative; padding:40px;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .flashcard-wrapper {
+      width: 400px; max-width: 90%;
+      perspective: 1200px;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 250px;
+      border-radius: 20px;
+      background: rgba(139,92,246,0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 22px;
+      padding: 20px;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      color: var(--color-text-light);
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+      background: rgba(139,92,246,0.8);
+      color: var(--color-deep-purple);
+      font-weight: 700;
+    }
+
+    .flashcard-buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .flashcard-buttons button {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      background: rgba(139,92,246,0.2);
+      color: var(--color-text-light);
+      box-shadow: 0 0 10px rgba(139,92,246,0.3);
+      transition: all 0.3s ease;
+    }
+    .flashcard-buttons button:hover {
+      background: var(--color-primary-glow);
+      color: var(--color-deep-purple);
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px var(--color-secondary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; flex-direction: row; justify-content: center; flex-wrap: wrap;}
+      .menu { flex-direction: row; flex-wrap: wrap; justify-content:center;}
+      .menu button { width:130px; font-size:14px;}
+      .flashcard-wrapper { width: 90%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2 class="logo">AI BOT</h2>
+      <nav class="menu">
+        <button>Flashcards</button>
+        <button>Quizzes</button>
+        <button>Summary</button>
+        <button>Videos</button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="flashcard-wrapper">
+        <div class="flashcard" id="flashcard">
+          <!-- AI will dynamically populate content here -->
+        </div>
+      </div>
+      <div class="flashcard-buttons">
+        <button id="prev">Previous</button>
+        <button id="flip">Flip</button>
+        <button id="next">Next</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Example JS structure for AI integration (empty content for now)
+    const flashcard = document.getElementById('flashcard');
+
+    // Flip functionality
+    document.getElementById('flip').addEventListener('click', () => {
+      flashcard.classList.toggle('flipped');
+    });
+
+    // Previous/Next buttons (AI will handle content dynamically)
+    document.getElementById('prev').addEventListener('click', () => {
+      flashcard.classList.remove('flipped');
+      // AI code will update flashcard content
+    });
+
+    document.getElementById('next').addEventListener('click', () => {
+      flashcard.classList.remove('flipped');
+      // AI code will update flashcard content
+    });
+    
+    
+document.addEventListener("DOMContentLoaded", async () => {
+  const flashcard = document.getElementById("flashcard");
+  const prevBtn = document.getElementById("prev");
+  const nextBtn = document.getElementById("next");
+  const flipBtn = document.getElementById("flip");
+
+  // 1️⃣ Get the topic from localStorage (set from main page)
+  const topic = localStorage.getItem("selectedTopic") || "General Topic";
+  console.log("Loaded topic:", topic);
+
+  // 2️⃣ Load saved flashcards if they exist
+  let flashcards = JSON.parse(localStorage.getItem(`${topic}_flashcards`)) || [];
+  let currentIndex = 0;
+
+  // 3️⃣ If no flashcards exist, generate them with AI
+  if (flashcards.length === 0) {
+    flashcard.innerHTML = `<p>⏳ Generating flashcards for <b>${topic}</b>... please wait.</p>`;
+    flashcards = await generateFlashcards(topic);
+    localStorage.setItem(`${topic}_flashcards`, JSON.stringify(flashcards));
+  }
+
+  // 4️⃣ Display the first flashcard
+  displayFlashcard();
+
+  // 🔄 Button events
+  nextBtn.addEventListener("click", () => {
+    if (flashcards.length > 0) {
+      currentIndex = (currentIndex + 1) % flashcards.length;
+      flashcard.classList.remove("flipped");
+      displayFlashcard();
+    }
+  });
+
+  prevBtn.addEventListener("click", () => {
+    if (flashcards.length > 0) {
+      currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length;
+      flashcard.classList.remove("flipped");
+      displayFlashcard();
+    }
+  });
+
+  flipBtn.addEventListener("click", () => {
+    flashcard.classList.toggle("flipped");
+  });
+
+  // 5️⃣ Display the flashcard content
+  function displayFlashcard() {
+    const card = flashcards[currentIndex];
+    flashcard.innerHTML = `
+      <div class="front">${card.front}</div>
+      <div class="back" style="display:none;">${card.back}</div>
+    `;
+  }
+
+  // Flip behavior
+  flipBtn.addEventListener("click", () => {
+    const front = flashcard.querySelector(".front");
+    const back = flashcard.querySelector(".back");
+    const flipped = flashcard.classList.toggle("flipped");
+
+    if (flipped) {
+      front.style.display = "none";
+      back.style.display = "block";
+    } else {
+      front.style.display = "block";
+      back.style.display = "none";
+    }
+  });
+
+  // 6️⃣ AI generator function (ChatGPT API)
+  async function generateFlashcards(topic) {
+    const apiKey = "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"; // 🔑 Replace with your actual ChatGPT API key
+    const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+    const prompt = `
+      Generate 5 educational flashcards about the topic "${topic}".
+      Format as JSON array with "front" and "back" fields. Example:
+      [
+        {"front": "What is photosynthesis?", "back": "The process by which plants convert sunlight into energy."},
+        {"front": "What is chlorophyll?", "back": "A green pigment in plants that absorbs light energy for photosynthesis."}
+      ]
+    `;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + apiKey
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+
+      const data = await response.json();
+      const text = data.choices?.[0]?.message?.content || "[]";
+      console.log("AI Response:", text);
+
+      // Safely parse JSON from AI
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.warn("Could not parse AI response, fallback text mode.");
+        return [
+          { front: "Error", back: "Could not generate flashcards." }
+        ];
+      }
+
+    } catch (error) {
+      console.error("Error generating flashcards:", error);
+      return [
+        { front: "Error", back: "Please check your API key or internet connection." }
+      ];
+    }
+  }
+});
+
+
+  </script>
+</body>
+</html>
